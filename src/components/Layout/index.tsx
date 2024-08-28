@@ -5,7 +5,7 @@ import PrivateLayout from "./PrivateLayout";
 import AlternativeLayout from "./AlternativeLayout";
 
 const publicRoutes = ["/", "/login"];
-const alternativeRoutes = ['/geral']
+const alternativeRoutes = ["/geral"];
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,11 +17,9 @@ function Layout({ children }: LayoutProps) {
   const isPrivate = !publicRoutes.includes(router.pathname);
   const isAlternative = alternativeRoutes.includes(router.pathname);
 
-  // if(isAlternative) {
-  //   return  (
-  //     <AlternativeLayout>{children}</AlternativeLayout>
-  //   )
-  // }
+  if (isAlternative) {
+    return <AlternativeLayout>{children}</AlternativeLayout>;
+  }
 
   return isPrivate ? (
     <PrivateLayout>{children}</PrivateLayout>
