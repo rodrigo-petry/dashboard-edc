@@ -44,6 +44,7 @@ import {
   responsiveLineData,
 } from "mocks/analiseDeContrato";
 import dayjs from "dayjs";
+import { metricPrefixFormatter } from "@utils/metricPrefix";
 
 const defaultObject = {
   grafico: responsiveBarData,
@@ -59,7 +60,7 @@ function AnaliseDeContrato() {
   // const { data } = useMonitors();
   // const idsMeters = data?.map((item: any) => item.meterId) || [];
   const [dataMock, setDataMock] = useState(greenData);
-  const [date, setDate] = useState<string>(new Date().toString());
+  const [date, setDate] = useState<Date>(new Date());
   const [weekNumber, setWeekNumber] = useState<number>(1);
   return (
     <>
@@ -68,10 +69,8 @@ function AnaliseDeContrato() {
           <DatePicker
             icon={<FaCalendar />}
             placeholder="Selecione uma data"
-            value={dayjs(date).toDate()}
-            onChange={(value: any) => {
-              setDate(value);
-            }}
+            value={date}
+            onChange={setDate}
           />
         </Grid.Col>
       </Grid>
@@ -374,6 +373,7 @@ function AnaliseDeContrato() {
                           <Button
                             style={{ backgroundColor: "#ffffff", padding: "0" }}
                             onClick={() => setWeekNumber(weekNumber + 1)}
+                            disabled={weekNumber === 4}
                           >
                             <svg
                               width="26"
@@ -408,7 +408,7 @@ function AnaliseDeContrato() {
 
                 <Grid.Col style={{ height: 400, minWidth: 0 }}>
                   <ResponsiveLine
-                    data={responsiveLineData}
+                    data={responsiveLineData[weekNumber]}
                     margin={{ top: 45, right: 100, bottom: 100, left: 35 }}
                     enableGridX={false}
                     enablePoints={false}
@@ -449,9 +449,6 @@ function AnaliseDeContrato() {
                         symbolSize: 12,
                         symbolShape: "square",
                         symbolBorderColor: "rgba(0, 0, 0, .5)",
-                        onClick: (datum) => {
-                          console.log(datum);
-                        },
                       },
                     ]}
                   />
@@ -469,7 +466,18 @@ function AnaliseDeContrato() {
                       legend: "",
                       legendOffset: 36,
                     }}
-                    tooltipFormat={(value) => <p>{value}</p>}
+                    label={(datum, key) =>
+                      datum[key] < 0 || datum[key] == null
+                        ? ""
+                        : `${metricPrefixFormatter(
+                            (datum[key] / 100) as number
+                          )}`
+                    }
+                    tooltipFormat={(value) =>
+                      value < 0 || value == null
+                        ? "X"
+                        : `${metricPrefixFormatter((value / 100) as number)}kWh`
+                    }
                     keys={keysHeatMap}
                     colors={[
                       "#d0f0c0",
